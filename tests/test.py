@@ -22,5 +22,4 @@ class Test(object):
     """Test cases."""
 
     def test_null(self):
-	pass
-
+        pass
