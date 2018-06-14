@@ -15,11 +15,25 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
+import os
 import pynamedotcom
+import pytest
 
 
-class Test(object):
+@pytest.fixture
+def auth():
+    """Read test api credentials from file."""
+    path = os.path.join(os.path.dirname(__file__), "auth.json")
+    with open(path) as f:
+        return json.load(f)
+
+
+class TestAPI(object):
     """Test cases."""
 
-    def test_null(self):
-        pass
+    def test_ping(self, auth):
+        """Test API ping."""
+        host = "api.dev.name.com"
+        with pynamedotcom.API(host=host, **auth) as api:
+            api.ping()
