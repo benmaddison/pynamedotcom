@@ -1,6 +1,9 @@
 # Secrets
 tests/auth.json
 
+# Working files
+scratch/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
