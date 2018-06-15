@@ -14,4 +14,9 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from pynamedotcom.api import API  #noqa
+import logging
+
+from pynamedotcom.api import API
+
+logging.getLogger(__name__).addHandler(logging.NullHandler())
+__all__ = [API.__name__]

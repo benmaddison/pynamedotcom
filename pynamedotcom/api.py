@@ -9,13 +9,16 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-"""pynamedotcom Package."""
+"""pynamedotcom API module."""
 
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import logging
 import requests
 from requests.auth import HTTPBasicAuth
+
+from pynamedotcom.domain import Domain
 
 
 class API(object):
@@ -35,7 +38,24 @@ class API(object):
         """Exit context manager."""
         pass
 
+    def _get(self, endpoint=None, params=None):
+        """Make a HTTP get request."""
+        url = "{}/{}".format(self.base_url, endpoint)
+        resp = requests.get(url, params=params, auth=self.auth)
+        logging.getLogger(__name__).debug(resp.json())
+        return resp
+
     def ping(self):
         """Check service reachability."""
-        url = "{}/hello".format(self.base_url)
-        requests.get(url, auth=self.auth)
+        resp = self._get(endpoint="hello")
+        return resp.json()
+
+    @property
+    def domains(self):
+        """Get list of domains."""
+        resp = self._get(endpoint="domains")
+        if "domains" in resp.json():
+            for domain in resp.json()["domains"]:
+                yield Domain(session=self, **domain)
+        else:
+            return
