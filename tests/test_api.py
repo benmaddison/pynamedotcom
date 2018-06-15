@@ -18,6 +18,7 @@ from __future__ import unicode_literals
 import json
 import os
 import pynamedotcom
+import pynamedotcom.domain
 import pytest
 
 
@@ -32,8 +33,15 @@ def auth():
 class TestAPI(object):
     """Test cases."""
 
+    host = "api.dev.name.com"
+
     def test_ping(self, auth):
         """Test API ping."""
-        host = "api.dev.name.com"
-        with pynamedotcom.API(host=host, **auth) as api:
+        with pynamedotcom.API(host=self.host, **auth) as api:
             api.ping()
+
+    def test_get_domains(self, auth):
+        """Test domains retrieval."""
+        with pynamedotcom.API(host=self.host, **auth) as api:
+            for domain in api.domains:
+                assert isinstance(domain, pynamedotcom.domain.Domain)
