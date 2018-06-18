@@ -81,4 +81,4 @@ class TestCLI(object):
         assert name in result.output
         for keyword in ["nameservers", "contacts", "privacy", "locked",
                         "autorenew", "expiry", "created", "renewal price"]:
-            keyword in result.output
+            assert keyword in result.output
