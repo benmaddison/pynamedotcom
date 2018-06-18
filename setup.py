@@ -49,9 +49,12 @@ setup(
     ],
     packages=find_packages(),
     include_package_data=True,
-
     url='https://github.com/benmaddison/pynamedotcom',
     download_url='https://github.com/benmaddison/pynamedotcom/%s' % version,
-
     install_requires=requirements,
+    entry_points={
+        'console_scripts': [
+            'namedotcom=pynamedotcom.cli:main',
+        ]
+    }
 )
