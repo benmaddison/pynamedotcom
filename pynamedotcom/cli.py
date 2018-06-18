@@ -9,19 +9,31 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-"""pynamedotcom API module."""
+"""pynamedotcom CLI module."""
 
 from __future__ import print_function
 
 import click
 import json
 import logging
+import os
 
 from pynamedotcom import API
 
 
 logger = logging.getLogger(__name__)
 
+
+def _default_auth_path():
+    """Try and find the default auth-file, if it exists."""
+    if "XDG_CONFIG_HOME" in os.environ:
+        base_path = os.environ.get("XDG_CONFIG_HOME")
+    else:
+        base_path = os.path.join(os.environ.get("HOME"), ".config")
+    path = os.path.join(base_path, "pynamedotcom", "auth.json")
+    if os.path.exists(path):
+        return path
+    return None
 
 @click.group()
 @click.pass_context
@@ -34,6 +46,7 @@ logger = logging.getLogger(__name__)
 @click.option('-t', "--token",
               help="name.com API token.")
 @click.option("-f", "--auth-file", type=click.Path(exists=True),
+              default=_default_auth_path(), show_default=True,
               help="Read credentials from file.")
 def main(ctx, host, debug, auth_file, username, token):
     """CLI tool for interacting with the name.com API."""
