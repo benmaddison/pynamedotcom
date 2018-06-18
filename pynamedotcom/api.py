@@ -39,10 +39,19 @@ class API(object):
         pass
 
     def _get(self, endpoint=None, params=None):
-        """Make a HTTP get request."""
+        """Make a HTTP GET request."""
         url = "{}/{}".format(self.base_url, endpoint)
         resp = requests.get(url, params=params, auth=self.auth)
         logging.getLogger(__name__).debug(resp.json())
+        resp.raise_for_status()
+        return resp
+
+    def _post(self, endpoint=None, data=None):
+        """Make a HTTP POST request."""
+        url = "{}/{}".format(self.base_url, endpoint)
+        resp = requests.post(url, json=data, auth=self.auth)
+        logging.getLogger(__name__).debug(resp.json())
+        resp.raise_for_status()
         return resp
 
     def ping(self):
@@ -50,12 +59,47 @@ class API(object):
         resp = self._get(endpoint="hello")
         return resp.json()
 
+    def get_domain(self, name):
+        """Get a domain."""
+        resp = self._get(endpoint="domains/{}".format(name))
+        return Domain(session=self, **resp.json())
+
     @property
     def domains(self):
-        """Get list of domains."""
+        """Get list of domains as a generator."""
         resp = self._get(endpoint="domains")
         if "domains" in resp.json():
             for domain in resp.json()["domains"]:
                 yield Domain(session=self, **domain)
         else:
             return
+
+    def check_availability(self, name):
+        """Check domain name availablility."""
+        search_data = {
+            'domainNames': [name]
+        }
+        resp = self._post(endpoint="domains:checkAvailability",
+                          data=search_data)
+        for result in resp.json()['results']:
+            if result['domainName'] == name:
+                return result
+        return False
+
+    def create_domain(self, name):
+        """Create new domain."""
+        domain_data = {
+            "domain": {
+                "domainName": name
+            }
+        }
+        try:
+            domain = self.get_domain(name)
+            return domain
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                resp = self._post(endpoint="domains", data=domain_data)
+                domain = Domain(session=self, **resp.json())
+                return domain
+            else:
+                raise e

@@ -17,31 +17,42 @@ from __future__ import unicode_literals
 
 import json
 import os
-import pynamedotcom
-import pynamedotcom.domain
 import pytest
+
+from pynamedotcom import API
+from pynamedotcom.domain import Domain
 
 
 @pytest.fixture
-def auth():
-    """Read test api credentials from file."""
+def api():
+    """Create test API instance."""
+    host = "api.dev.name.com"
     path = os.path.join(os.path.dirname(__file__), "auth.json")
     with open(path) as f:
-        return json.load(f)
+        auth = json.load(f)
+
+    def func():
+        return API(host=host, **auth)
+
+    return func
 
 
 class TestAPI(object):
     """Test cases."""
 
-    host = "api.dev.name.com"
-
-    def test_ping(self, auth):
-        """Test API ping."""
-        with pynamedotcom.API(host=self.host, **auth) as api:
+    def test_ping(self, api):
+        """Test ping() method."""
+        with api() as api:
             api.ping()
 
-    def test_get_domains(self, auth):
+    # def test_get_domain(self, auth):
+    #     """Test get_domain() method."""
+    #     with API(host=self.host, **auth) as api:
+    #         domain = api.get_domain(name="pynamedotcom.io")
+    #         assert isinstance(domain, Domain)
+    #
+    def test_get_domains(self, api):
         """Test domains retrieval."""
-        with pynamedotcom.API(host=self.host, **auth) as api:
+        with api() as api:
             for domain in api.domains:
-                assert isinstance(domain, pynamedotcom.domain.Domain)
+                assert isinstance(domain, Domain)
