@@ -64,3 +64,21 @@ class TestCLI(object):
         result = self.invoke(args=args, auth_file=False)
         assert result.exit_code == 0
         assert "OK" in result.output
+
+    def test_get_domains(self):
+        """Test domain list retrieval."""
+        args = ["domains"]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert "maddison.family" in result.output
+
+    def test_get_domain(self):
+        """Test domain detail retrieval."""
+        name = "maddison.family"
+        args = ["domain", name]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert name in result.output
+        for keyword in ["nameservers", "contacts", "privacy", "locked",
+                        "autorenew", "expiry", "created", "renewal price"]:
+            keyword in result.output

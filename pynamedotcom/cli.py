@@ -73,5 +73,51 @@ def ping(ctx):
             raise click.ClickException(click.style("{}".format(e), fg="red"))
 
 
+@main.command()
+@click.pass_context
+def domains(ctx):
+    """Get list of domain names."""
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj() as api:
+        try:
+            # Execute method and print a success message
+            for domain in api.domains:
+                click.echo(domain.name)
+        except Exception as e:
+            # Raise the correct exception on failure
+            raise click.ClickException(click.style("{}".format(e), fg="red"))
+
+
+@main.group(invoke_without_command=True)
+@click.pass_context
+@click.argument("name")
+def domain(ctx, name):
+    """Get domain details."""
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj() as api:
+        try:
+            # Execute method and print a success message
+            domain = api.get_domain(name=name)
+            click.echo("{}".format(domain.name))
+            click.echo("  nameservers:")
+            for ns in domain.nameservers:
+                click.echo("    {}".format(ns))
+            click.echo("  contacts:")
+            for role, contact in domain.contacts.items():
+                click.echo("    {}: {} {} ({})".format(role,
+                                                       contact["firstName"],
+                                                       contact["lastName"],
+                                                       contact["email"]))
+            click.echo("  privacy: {}".format(domain.privacy))
+            click.echo("  locked: {}".format(domain.locked))
+            click.echo("  autorenew: {}".format(domain.autorenew))
+            click.echo("  expiry: {}".format(domain.expiry))
+            click.echo("  created: {}".format(domain.created))
+            click.echo("  renewal price: ${}".format(domain.renewal_price))
+        except Exception as e:
+            # Raise the correct exception on failure
+            raise click.ClickException(click.style("{}".format(e), fg="red"))
+
+
 if __name__ == "__main__":
     main()
