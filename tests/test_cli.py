@@ -13,8 +13,8 @@
 
 
 from __future__ import print_function
-from __future__ import unicode_literals
 
+import json
 import os
 
 from click.testing import CliRunner
@@ -26,11 +26,21 @@ class TestCLI(object):
     """Test cases."""
 
     @staticmethod
-    def invoke(args=None):
+    def invoke(args=None, debug=False, auth_file=True,
+               host="api.dev.name.com"):
         """Invoke the command with the supplied arguments."""
-        host = "api.dev.name.com"
+        base_args = ["--host", host]
         path = os.path.join(os.path.dirname(__file__), "auth.json")
-        args = ["--auth-file", path, "--host", host] + args
+        if auth_file:
+            base_args += ["--auth-file", path]
+        else:
+            with open(path) as f:
+                auth = json.load(f)
+            base_args += ["--username", auth["user"],
+                          "--token", auth["token"]]
+        if debug:
+            base_args.append("--debug")
+        args = base_args + args
         runner = CliRunner()
         return runner.invoke(main, args)
 
@@ -38,5 +48,19 @@ class TestCLI(object):
         """Test ping command."""
         args = ["ping"]
         result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert "OK" in result.output
+
+    def test_ping_debug(self):
+        """Test ping command with debugging enabled."""
+        args = ["ping"]
+        result = self.invoke(args=args, debug=True)
+        assert result.exit_code == 0
+        assert "OK" in result.output
+
+    def test_ping_credentials(self):
+        """Test ping command with explicit credentials."""
+        args = ["ping"]
+        result = self.invoke(args=args, auth_file=False)
         assert result.exit_code == 0
         assert "OK" in result.output
