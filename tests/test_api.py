@@ -45,14 +45,18 @@ class TestAPI(object):
         with api() as api:
             api.ping()
 
-    # def test_get_domain(self, auth):
-    #     """Test get_domain() method."""
-    #     with API(host=self.host, **auth) as api:
-    #         domain = api.get_domain(name="pynamedotcom.io")
-    #         assert isinstance(domain, Domain)
-    #
+    def test_get_domain(self, api):
+        """Test get_domain() method."""
+        with api() as api:
+            name = "maddison.family"
+            domain = api.get_domain(name=name)
+            assert isinstance(domain, Domain)
+            assert domain.name == name
+            assert isinstance(domain.renewal_price, float)
+
     def test_get_domains(self, api):
         """Test domains retrieval."""
         with api() as api:
             for domain in api.domains:
                 assert isinstance(domain, Domain)
+                assert isinstance(domain.renewal_price, float)
