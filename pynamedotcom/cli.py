@@ -28,45 +28,62 @@ def _default_auth_path():
     """Try and find the default auth-file, if it exists."""
     if "XDG_CONFIG_HOME" in os.environ:
         base_path = os.environ.get("XDG_CONFIG_HOME")
-    else:
+    elif "HOME" in os.environ:
         base_path = os.path.join(os.environ.get("HOME"), ".config")
+    else:
+        return None
     path = os.path.join(base_path, "pynamedotcom", "auth.json")
     if os.path.exists(path):
         return path
     return None
 
-@click.group()
-@click.pass_context
-@click.option("-d", "--debug", is_flag=True,
-              help="Enable debug logging.")
-@click.option("-h", "--host", default="api.name.com",
-              help="Server hostname.", show_default=True)
-@click.option("-u", "--username",
-              help="name.com username.")
-@click.option('-t', "--token",
-              help="name.com API token.")
-@click.option("-f", "--auth-file", type=click.Path(exists=True),
-              default=_default_auth_path(), show_default=True,
-              help="Read credentials from file.")
-def main(ctx, host, debug, auth_file, username, token):
-    """CLI tool for interacting with the name.com API."""
-    # Configure logging
-    if debug:
+
+def _set_log_level(ctx, param, value):
+    """Set logging level according to the --debug flag."""
+    if value:
         log_level = logging.DEBUG
     else:
         log_level = logging.WARNING
     logging.basicConfig(level=log_level)
+    return value
+
+
+@click.group()
+@click.pass_context
+@click.option("-d", "--debug", is_flag=True,
+              callback=_set_log_level, is_eager=True, expose_value=False,
+              help="Enable debug logging.")
+@click.option("-h", "--host", default="api.name.com",
+              help="Server hostname.", show_default=True)
+@click.option("-u", "--username",
+              help="name.com username. Overides --auth-file.")
+@click.option('-t', "--token",
+              help="name.com API token. Overides --auth-file")
+@click.option("-f", "--auth-file", type=click.Path(exists=True),
+              default=_default_auth_path(), show_default=True,
+              help="Read credentials from file.")
+@click.version_option()
+def main(ctx, host, auth_file, username, token):
+    """CLI tool for interacting with the name.com API."""
     # Get credentials from file or CLI options
+    auth = {"user": None, "token": None}
+    # Try reading from file
     if auth_file:
+        logger.debug("reading auth parameters from {}".format(auth_file))
         with open(auth_file) as f:
             auth = json.load(f)
-    else:
-        auth = {"user": username, "token": token}
+    # Overide values based on -u/-t options
+    if username:
+        auth["user"] = username
+    if token:
+        auth["token"] = token
     logger.debug("connecting to {} as {}".format(host, auth["user"]))
 
+    # Declare helper function
     def api():
         """Helper function to return configured pynamedotcom.API instance."""
         return API(host=host, **auth)
+
     # Add helper to click Context.obj to pass to command functions
     ctx.obj = api
 
@@ -130,7 +147,3 @@ def domain(ctx, name):
         except Exception as e:
             # Raise the correct exception on failure
             raise click.ClickException(click.style("{}".format(e), fg="red"))
-
-
-if __name__ == "__main__":
-    main()
