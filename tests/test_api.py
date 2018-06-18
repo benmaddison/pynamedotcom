@@ -20,6 +20,7 @@ import os
 import pytest
 
 from pynamedotcom import API
+from pynamedotcom.contact import Contact, ROLES
 from pynamedotcom.domain import Domain
 from pynamedotcom.search import SearchResult
 
@@ -56,6 +57,11 @@ class TestAPI(object):
             assert isinstance(domain.renewal_price, float)
             with pytest.raises(AttributeError):
                 domain.not_a_property
+            for role, contact in domain.contacts.items():
+                assert role in ROLES
+                assert isinstance(contact, Contact)
+                with pytest.raises(AttributeError):
+                    contact.not_a_property
 
     def test_get_domains(self, api):
         """Test domains retrieval."""

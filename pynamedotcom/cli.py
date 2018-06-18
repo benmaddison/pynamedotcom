@@ -134,10 +134,7 @@ def domain(ctx, name):
                 click.echo("    {}".format(ns))
             click.echo("  contacts:")
             for role, contact in domain.contacts.items():
-                click.echo("    {}: {} {} ({})".format(role,
-                                                       contact["firstName"],
-                                                       contact["lastName"],
-                                                       contact["email"]))
+                click.echo("    {}: {}".format(role, contact))
             click.echo("  privacy: {}".format(domain.privacy))
             click.echo("  locked: {}".format(domain.locked))
             click.echo("  autorenew: {}".format(domain.autorenew))

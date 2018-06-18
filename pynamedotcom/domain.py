@@ -14,6 +14,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from pynamedotcom.contact import Contact
+
 
 class Domain(object):
     """Domain class."""
@@ -32,13 +34,16 @@ class Domain(object):
         """Set local properties."""
         self._name = domainName
         self._nameservers = nameservers
-        self._contacts = contacts
         self._privacy = privacyEnabled
         self._locked = locked
         self._autorenew = autorenewEnabled
         self._expiry = expireDate
         self._created = createDate
         self._renewal_price = renewalPrice
+        if contacts is not None:
+            self._contacts = {}
+            for role, contact in contacts.items():
+                self._contacts[role] = Contact(session=self.session, **contact)
 
     def _refresh(self):
         """Retrieve domain properties."""
