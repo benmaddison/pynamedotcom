@@ -99,8 +99,8 @@ def ping(ctx):
             api.ping()
             click.echo(click.style("OK", fg="green"))
         except Exception as e:
-            # Raise the correct exception on failure
-            raise click.ClickException(click.style("{}".format(e), fg="red"))
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
 
 
 @main.command()
@@ -114,8 +114,8 @@ def domains(ctx):
             for domain in api.domains:
                 click.echo(domain.name)
         except Exception as e:
-            # Raise the correct exception on failure
-            raise click.ClickException(click.style("{}".format(e), fg="red"))
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
 
 
 @main.group(invoke_without_command=True)
@@ -126,7 +126,7 @@ def domain(ctx, name):
     # Use provided helper to instantiate pynamedotcom.API object
     with ctx.obj() as api:
         try:
-            # Execute method and print a success message
+            # Execute method and print the domain details
             domain = api.get_domain(name=name)
             click.echo("{}".format(domain.name))
             click.echo("  nameservers:")
@@ -145,5 +145,31 @@ def domain(ctx, name):
             click.echo("  created: {}".format(domain.created))
             click.echo("  renewal price: ${}".format(domain.renewal_price))
         except Exception as e:
-            # Raise the correct exception on failure
-            raise click.ClickException(click.style("{}".format(e), fg="red"))
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
+
+
+@main.command()
+@click.pass_context
+@click.argument("name")
+def search(ctx, name):
+    """Search for domain availablility."""
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj() as api:
+        try:
+            # Execute method and print the results
+            result = api.check_availability(name=name)
+            if result.purchasable:
+                click.echo(click.style("{} is available:".format(result.name),
+                                       fg="green"))
+                click.echo("  premium: {}".format(result.premium))
+                click.echo("  type: {}".format(result.purchase_type))
+                click.echo("  purchase price: ${}".format(result.purchase_price))  # noqa
+                click.echo("  renewal price: ${}".format(result.renewal_price))
+            else:
+                click.echo(click.style("{} is not available".format(result.name),  # noqa
+                                       fg="red"))
+                ctx.exit(code=1)
+        except Exception as e:
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))

@@ -82,3 +82,23 @@ class TestCLI(object):
         for keyword in ["nameservers", "contacts", "privacy", "locked",
                         "autorenew", "expiry", "created", "renewal price"]:
             assert keyword in result.output
+
+    def test_search_available(self):
+        """Test successful availablility search."""
+        name = "maddison.name"
+        args = ["search", name]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert name in result.output
+        for keyword in ["premium", "type", "purchase price", "renewal price"]:
+            assert keyword in result.output
+
+    def test_search_unavailable(self):
+        """Test unsuccessful availablility search."""
+        name = "maddison.family"
+        args = ["search", name]
+        result = self.invoke(args=args)
+        assert result.exit_code == 1
+        assert name in result.output
+        for keyword in ["premium", "type", "purchase price", "renewal price"]:
+            assert keyword not in result.output

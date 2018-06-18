@@ -21,6 +21,7 @@ import pytest
 
 from pynamedotcom import API
 from pynamedotcom.domain import Domain
+from pynamedotcom.search import SearchResult
 
 
 @pytest.fixture
@@ -53,6 +54,8 @@ class TestAPI(object):
             assert isinstance(domain, Domain)
             assert domain.name == name
             assert isinstance(domain.renewal_price, float)
+            with pytest.raises(AttributeError):
+                domain.not_a_property
 
     def test_get_domains(self, api):
         """Test domains retrieval."""
@@ -60,3 +63,25 @@ class TestAPI(object):
             for domain in api.domains:
                 assert isinstance(domain, Domain)
                 assert isinstance(domain.renewal_price, float)
+
+    def test_search_available(self, api):
+        """Test successful availablility search."""
+        with api() as api:
+            name = "maddison.name"
+            result = api.check_availability(name=name)
+            assert isinstance(result, SearchResult)
+            assert result.name == name
+            assert result.purchasable
+            with pytest.raises(AttributeError):
+                result.not_a_property
+
+    def test_search_unavailable(self, api):
+        """Test unsuccessful availablility search."""
+        with api() as api:
+            name = "maddison.family"
+            result = api.check_availability(name=name)
+            assert isinstance(result, SearchResult)
+            assert result.name == name
+            assert not result.purchasable
+            with pytest.raises(AttributeError):
+                result.not_a_property

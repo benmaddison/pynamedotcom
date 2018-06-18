@@ -19,6 +19,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 from pynamedotcom.domain import Domain
+from pynamedotcom.search import SearchResult
 
 
 class API(object):
@@ -83,7 +84,7 @@ class API(object):
                           data=search_data)
         for result in resp.json()['results']:
             if result['domainName'] == name:
-                return result
+                return SearchResult(session=self, **result)
         return False
 
     def create_domain(self, name):
