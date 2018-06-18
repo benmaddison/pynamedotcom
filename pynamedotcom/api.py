@@ -86,21 +86,3 @@ class API(object):
             if result['domainName'] == name:
                 return SearchResult(session=self, **result)
         return False
-
-    def create_domain(self, name):
-        """Create new domain."""
-        domain_data = {
-            "domain": {
-                "domainName": name
-            }
-        }
-        try:
-            domain = self.get_domain(name)
-            return domain
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 404:
-                resp = self._post(endpoint="domains", data=domain_data)
-                domain = Domain(session=self, **resp.json())
-                return domain
-            else:
-                raise e
