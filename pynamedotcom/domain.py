@@ -19,7 +19,7 @@ import logging
 from requests.exceptions import HTTPError
 
 from pynamedotcom.contact import Contact
-from pynamedotcom.decorators import require_type
+from pynamedotcom.decorators import readonly, refresh, require_type
 from pynamedotcom.exceptions import DomainUnlockTimeError
 
 
@@ -56,17 +56,45 @@ class Domain(object):
         resp = self.session._get(endpoint="domains/{}".format(self.name))
         self._set(**resp.json())
 
-    def __getattr__(self, name):
-        """Get private attributes."""
-        try:
-            if self.__getattribute__("_{}".format(name)) is None:
-                self._refresh()
-            return self.__getattribute__("_{}".format(name))
-        except AttributeError:
-            raise AttributeError("{} object has no attribute {}"
-                                 .format(self.__class__, name))
+    @property
+    @refresh
+    def name(self):
+        return self._name
+
+    @name.setter
+    @readonly
+    def name(self, value):
+        pass
 
     @property
+    @refresh
+    def nameservers(self):
+        return self._nameservers
+
+    @nameservers.setter
+    def nameservers(self, value):
+        raise NotImplementedError
+
+    @property
+    @refresh
+    def contacts(self):
+        return self._contacts
+
+    @contacts.setter
+    def contacts(self, value):
+        raise NotImplementedError
+
+    @property
+    @refresh
+    def privacy(self):
+        return self._privacy
+
+    @privacy.setter
+    def privacy(self, value):
+        raise NotImplementedError
+
+    @property
+    @refresh
     def locked(self):
         return self._locked
 
@@ -91,3 +119,42 @@ class Domain(object):
             else:
                 raise e
         return self
+
+    @property
+    @refresh
+    def autorenew(self):
+        return self._autorenew
+
+    @autorenew.setter
+    def autorenew(self, value):
+        raise NotImplementedError
+
+    @property
+    @refresh
+    def expiry(self):
+        return self._expiry
+
+    @expiry.setter
+    @readonly
+    def expiry(self, value):
+        pass
+
+    @property
+    @refresh
+    def created(self):
+        return self._created
+
+    @created.setter
+    @readonly
+    def created(self, value):
+        pass
+
+    @property
+    @refresh
+    def renewal_price(self):
+        return self._renewal_price
+
+    @renewal_price.setter
+    @readonly
+    def renewal_price(self, value):
+        pass
