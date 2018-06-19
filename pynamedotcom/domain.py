@@ -51,7 +51,7 @@ class Domain(object):
         for role, contact in contacts.items():
             self._contacts[role] = Contact(session=self.session, **contact)
 
-    def _refresh(self):
+    def refresh(self):
         """Retrieve domain properties."""
         resp = self.session._get(endpoint="domains/{}".format(self.name))
         self._set(**resp.json())
