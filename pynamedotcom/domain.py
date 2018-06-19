@@ -55,6 +55,7 @@ class Domain(object):
         """Retrieve domain properties."""
         resp = self.session._get(endpoint="domains/{}".format(self.name))
         self._set(**resp.json())
+        return self
 
     @property
     def name(self):

@@ -26,6 +26,10 @@ from pynamedotcom.exceptions import (DomainUnlockTimeError,
 class TestDomain(object):
     """Domain test cases."""
 
+    def test_refresh(self, domain):
+        """Test refresh method."""
+        assert domain.name == domain.refresh().name
+
     def test_name_property(self, domain):
         """Test name property."""
         old_value = "maddison.family"
