@@ -48,10 +48,10 @@ class TestAPI(object):
             api.ping()
 
     def test_get_domain(self, api):
-        """Test get_domain() method."""
+        """Test domain retrieval."""
         with api() as api:
             name = "maddison.family"
-            domain = api.get_domain(name=name)
+            domain = api.domain(name=name)
             assert isinstance(domain, Domain)
             assert domain.name == name
             assert isinstance(domain.renewal_price, float)

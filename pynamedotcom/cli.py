@@ -127,7 +127,7 @@ def domain(ctx, name):
     with ctx.obj() as api:
         try:
             # Execute method and print the domain details
-            domain = api.get_domain(name=name)
+            domain = api.domain(name=name)
             click.echo("{}".format(domain.name))
             click.echo("  nameservers:")
             for ns in domain.nameservers:

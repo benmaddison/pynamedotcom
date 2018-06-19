@@ -60,7 +60,7 @@ class API(object):
         resp = self._get(endpoint="hello")
         return resp.json()
 
-    def get_domain(self, name):
+    def domain(self, name):
         """Get a domain."""
         resp = self._get(endpoint="domains/{}".format(name))
         return Domain(session=self, **resp.json())
