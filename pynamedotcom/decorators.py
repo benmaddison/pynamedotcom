@@ -17,16 +17,6 @@ from __future__ import unicode_literals
 import functools
 
 
-def refresh(func):
-    """Refresh instance data before returning from getter."""
-    @functools.wraps(func)
-    def wrapper(self):
-        if self.__getattribute__("_{}".format(func.__name__)) is None:
-            self._refresh()
-        return func(self)
-    return wrapper
-
-
 def require_type(typ):
     """Decorate func to check type of 'value' argument before calling."""
     def decorator(func):

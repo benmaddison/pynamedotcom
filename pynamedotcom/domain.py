@@ -19,7 +19,7 @@ import logging
 from requests.exceptions import HTTPError
 
 from pynamedotcom.contact import Contact
-from pynamedotcom.decorators import readonly, refresh, require_type
+from pynamedotcom.decorators import readonly, require_type
 from pynamedotcom.exceptions import (DomainUnlockTimeError,
                                      NameserverUpdateError)
 
@@ -57,7 +57,6 @@ class Domain(object):
         self._set(**resp.json())
 
     @property
-    @refresh
     def name(self):
         return self._name
 
@@ -67,7 +66,6 @@ class Domain(object):
         pass  # pragma: no cover
 
     @property
-    @refresh
     def nameservers(self):
         return self._nameservers
 
@@ -93,7 +91,6 @@ class Domain(object):
                 raise e
 
     @property
-    @refresh
     def contacts(self):
         return self._contacts
 
@@ -102,7 +99,6 @@ class Domain(object):
         raise NotImplementedError
 
     @property
-    @refresh
     def privacy(self):
         return self._privacy
 
@@ -111,7 +107,6 @@ class Domain(object):
         raise NotImplementedError
 
     @property
-    @refresh
     def locked(self):
         return self._locked
 
@@ -137,7 +132,6 @@ class Domain(object):
                 raise e
 
     @property
-    @refresh
     def autorenew(self):
         return self._autorenew
 
@@ -154,7 +148,6 @@ class Domain(object):
         self._set(**resp.json())
 
     @property
-    @refresh
     def expiry(self):
         return self._expiry
 
@@ -164,7 +157,6 @@ class Domain(object):
         pass  # pragma: no cover
 
     @property
-    @refresh
     def created(self):
         return self._created
 
@@ -174,7 +166,6 @@ class Domain(object):
         pass  # pragma: no cover
 
     @property
-    @refresh
     def renewal_price(self):
         return self._renewal_price
 
