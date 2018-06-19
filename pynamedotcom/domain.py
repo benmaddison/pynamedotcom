@@ -35,8 +35,8 @@ class Domain(object):
         return "{}({})".format(self.__class__.__name__, self.name)
 
     def _set(self, domainName, nameservers=None, contacts=None,
-             privacyEnabled=None, locked=None, autorenewEnabled=None,
-             expireDate=None, createDate=None, renewalPrice=None):
+             privacyEnabled=False, locked=False, autorenewEnabled=False,
+             expireDate=None, createDate=None, renewalPrice=0):
         """Set local properties."""
         self._name = domainName
         self._nameservers = nameservers
@@ -46,10 +46,9 @@ class Domain(object):
         self._expiry = expireDate
         self._created = createDate
         self._renewal_price = renewalPrice
-        if contacts is not None:
-            self._contacts = {}
-            for role, contact in contacts.items():
-                self._contacts[role] = Contact(session=self.session, **contact)
+        self._contacts = {}
+        for role, contact in contacts.items():
+            self._contacts[role] = Contact(session=self.session, **contact)
 
     def _refresh(self):
         """Retrieve domain properties."""
@@ -64,7 +63,7 @@ class Domain(object):
     @name.setter
     @readonly
     def name(self, value):
-        pass
+        pass  # pragma: no cover
 
     @property
     @refresh
@@ -118,7 +117,6 @@ class Domain(object):
                 raise DomainUnlockTimeError(data["details"])
             else:
                 raise e
-        return self
 
     @property
     @refresh
@@ -126,8 +124,16 @@ class Domain(object):
         return self._autorenew
 
     @autorenew.setter
+    @require_type(bool)
     def autorenew(self, value):
-        raise NotImplementedError
+        logging.getLogger(__name__).debug(
+            "setting {}.autorenew = {}".format(self, value))
+        if value:
+            endpoint = "domains/{}:enableAutorenew".format(self.name)
+        else:
+            endpoint = "domains/{}:disableAutorenew".format(self.name)
+        resp = self.session._post(endpoint=endpoint)
+        self._set(**resp.json())
 
     @property
     @refresh
@@ -137,7 +143,7 @@ class Domain(object):
     @expiry.setter
     @readonly
     def expiry(self, value):
-        pass
+        pass  # pragma: no cover
 
     @property
     @refresh
@@ -147,7 +153,7 @@ class Domain(object):
     @created.setter
     @readonly
     def created(self, value):
-        pass
+        pass  # pragma: no cover
 
     @property
     @refresh
@@ -157,4 +163,4 @@ class Domain(object):
     @renewal_price.setter
     @readonly
     def renewal_price(self, value):
-        pass
+        pass  # pragma: no cover

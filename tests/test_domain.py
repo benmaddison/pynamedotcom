@@ -109,7 +109,6 @@ class TestDomain(object):
         domain.locked = old_value
         assert domain.locked == old_value
 
-    @pytest.mark.xfail(raises=NotImplementedError)
     def test_autorenew_property(self, domain):
         """Test autorenew property."""
         old_value = domain.autorenew
