@@ -22,6 +22,15 @@ class BaseException(Exception):
 
 class DomainUnlockTimeError(BaseException):
     """
-    Error indicating that the specified domain cannot be unlocked until
-    the specified time.
+    Error indicating that the specified domain cannot be unlocked until the
+    specified time.
     """
+    pass
+
+
+class NameserverUpdateError(BaseException):
+    """
+    Error indicating a failure setting the delegation NS resource records on a
+    domain. Usually because of missing "glue" records.
+    """
+    pass

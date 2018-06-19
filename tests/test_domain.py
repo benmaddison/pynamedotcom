@@ -19,7 +19,8 @@ import pytest
 import re
 
 from pynamedotcom.contact import Contact
-from pynamedotcom.exceptions import DomainUnlockTimeError
+from pynamedotcom.exceptions import (DomainUnlockTimeError,
+                                     NameserverUpdateError)
 
 
 class TestDomain(object):
@@ -33,14 +34,18 @@ class TestDomain(object):
         with pytest.raises(AttributeError, match=r'read-only'):
             domain.name = new_value
 
-    @pytest.mark.xfail(raises=NotImplementedError)
     def test_nameservers_property(self, domain):
         """Test nameservers property."""
         old_value = domain.nameservers
         new_value = ["ns1.example.com", "ns2.example.com"]
+        new_value_missing_glue = ["ns.{}".format(domain.name)]
         bad_value = "foo"
         # set new_value
         domain.nameservers = new_value
+        assert domain.nameservers == new_value
+        # set new_value_missing_glue
+        with pytest.raises(NameserverUpdateError):
+            domain.nameservers = new_value_missing_glue
         assert domain.nameservers == new_value
         # set bad_value
         with pytest.raises(TypeError):

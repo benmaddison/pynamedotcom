@@ -20,7 +20,8 @@ from requests.exceptions import HTTPError
 
 from pynamedotcom.contact import Contact
 from pynamedotcom.decorators import readonly, refresh, require_type
-from pynamedotcom.exceptions import DomainUnlockTimeError
+from pynamedotcom.exceptions import (DomainUnlockTimeError,
+                                     NameserverUpdateError)
 
 
 class Domain(object):
@@ -71,8 +72,25 @@ class Domain(object):
         return self._nameservers
 
     @nameservers.setter
+    @require_type(list)
     def nameservers(self, value):
-        raise NotImplementedError
+        logging.getLogger(__name__).debug(
+            "setting {}.nameservers = {}".format(self, value))
+        endpoint = "domains/{}:setNameservers".format(self.name)
+        data = {
+            "nameservers": value
+        }
+        try:
+            resp = self.session._post(endpoint=endpoint, data=data)
+            self._set(**resp.json())
+        except HTTPError as e:
+            resp = e.response
+            data = resp.json()
+            if resp.status_code == 500 \
+                    and "Data Management Policy Violation" in data["details"]:
+                raise NameserverUpdateError(data["details"])
+            else:
+                raise e
 
     @property
     @refresh
