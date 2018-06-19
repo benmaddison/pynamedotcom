@@ -73,8 +73,8 @@ class Domain(object):
     @nameservers.setter
     @require_type(list)
     def nameservers(self, value):
-        logging.getLogger(__name__).debug(
-            "setting {}.nameservers = {}".format(self, value))
+        logging.getLogger(__name__).debug("setting {}.nameservers = {}"
+                                          .format(self, value))
         endpoint = "domains/{}:setNameservers".format(self.name)
         data = {
             "nameservers": value
@@ -114,8 +114,8 @@ class Domain(object):
     @locked.setter
     @require_type(bool)
     def locked(self, value):
-        logging.getLogger(__name__).debug(
-            "setting {}.locked = {}".format(self, value))
+        logging.getLogger(__name__).debug("setting {}.locked = {}"
+                                          .format(self, value))
         if value:
             endpoint = "domains/{}:lock".format(self.name)
         else:
@@ -139,8 +139,8 @@ class Domain(object):
     @autorenew.setter
     @require_type(bool)
     def autorenew(self, value):
-        logging.getLogger(__name__).debug(
-            "setting {}.autorenew = {}".format(self, value))
+        logging.getLogger(__name__).debug("setting {}.autorenew = {}"
+                                          .format(self, value))
         if value:
             endpoint = "domains/{}:enableAutorenew".format(self.name)
         else:
