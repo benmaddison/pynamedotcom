@@ -27,7 +27,7 @@ from pynamedotcom.exceptions import DomainUnlockTimeError
 from pynamedotcom.search import SearchResult
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def api():
     """Create test API instance."""
     host = "api.dev.name.com"
@@ -41,7 +41,7 @@ def api():
     return func
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def domain(api):
     """Create test Domain instance."""
     name = "maddison.family"
