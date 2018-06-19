@@ -49,9 +49,8 @@ class TestAPI(object):
     def test_get_domains(self, api):
         """Test domains retrieval."""
         with api() as api:
-            for domain in api.domains:
-                assert isinstance(domain, Domain)
-                assert isinstance(domain.renewal_price, float)
+            name = "maddison.family"
+            assert name in api.domains
 
     def test_search_available(self, api):
         """Test successful availablility search."""

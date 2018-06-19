@@ -112,7 +112,7 @@ def domains(ctx):
         try:
             # Execute method and print a success message
             for domain in api.domains:
-                click.echo(domain.name)
+                click.echo(domain)
         except Exception as e:
             # fail cleanly
             ctx.fail(message=click.style("{}".format(e), fg="red"))

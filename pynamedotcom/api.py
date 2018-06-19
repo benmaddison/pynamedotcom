@@ -71,7 +71,7 @@ class API(object):
         resp = self._get(endpoint="domains")
         if "domains" in resp.json():
             for domain in resp.json()["domains"]:
-                yield Domain(session=self, **domain)
+                yield domain["domainName"]
         else:
             return
 
