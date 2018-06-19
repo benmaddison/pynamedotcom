@@ -14,7 +14,13 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import logging
+
+from requests.exceptions import HTTPError
+
 from pynamedotcom.contact import Contact
+from pynamedotcom.decorators import require_type
+from pynamedotcom.exceptions import DomainUnlockTimeError
 
 
 class Domain(object):
@@ -59,3 +65,29 @@ class Domain(object):
         except AttributeError:
             raise AttributeError("{} object has no attribute {}"
                                  .format(self.__class__, name))
+
+    @property
+    def locked(self):
+        return self._locked
+
+    @locked.setter
+    @require_type(bool)
+    def locked(self, value):
+        logging.getLogger(__name__).debug(
+            "setting {}.locked = {}".format(self, value))
+        if value:
+            endpoint = "domains/{}:lock".format(self.name)
+        else:
+            endpoint = "domains/{}:unlock".format(self.name)
+        try:
+            resp = self.session._post(endpoint=endpoint)
+            self._set(**resp.json())
+        except HTTPError as e:
+            resp = e.response
+            data = resp.json()
+            if resp.status_code == 400 \
+                    and "Domain can not be unlocked until" in data["details"]:
+                raise DomainUnlockTimeError(data["details"])
+            else:
+                raise e
+        return self

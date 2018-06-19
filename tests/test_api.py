@@ -22,6 +22,7 @@ import pytest
 from pynamedotcom import API
 from pynamedotcom.contact import Contact, ROLES
 from pynamedotcom.domain import Domain
+from pynamedotcom.exceptions import DomainUnlockTimeError
 from pynamedotcom.search import SearchResult
 
 
@@ -39,8 +40,17 @@ def api():
     return func
 
 
+@pytest.fixture
+def domain(api):
+    """Create test Domain instance."""
+    name = "maddison.family"
+    with api() as api:
+        domain = api.domain(name=name)
+    return domain
+
+
 class TestAPI(object):
-    """Test cases."""
+    """API test cases."""
 
     def test_ping(self, api):
         """Test ping() method."""
@@ -91,3 +101,33 @@ class TestAPI(object):
             assert not result.purchasable
             with pytest.raises(AttributeError):
                 result.not_a_property
+
+
+class TestDomain(object):
+    """Domain test cases."""
+
+    name = "maddison.family"
+
+    def test_name_property(self, domain):
+        """Test name getter."""
+        assert domain.name == self.name
+
+    def test_locked_property(self, domain):
+        """Test locked getter/setter."""
+        old_value = domain.locked
+        new_value = not old_value
+        bad_value = "foo"
+        # set new_value
+        try:
+            domain.locked = new_value
+            assert domain.locked == new_value
+        except DomainUnlockTimeError:
+            assert domain.locked == old_value
+            new_value = old_value
+        # set bad_value
+        with pytest.raises(TypeError):
+            domain.locked = bad_value
+        assert domain.locked == new_value
+        # re-set to old value
+        domain.locked = old_value
+        assert domain.locked == old_value
