@@ -93,12 +93,23 @@ class TestCLI(object):
         assert result.exit_code == 0
         assert name in result.output
 
-    def test_get_domain_nameservers(self):
-        """Test domain nameservers retrieval."""
+    def test_get_set_domain_nameservers(self):
+        """Test getting/setting domain nameservers."""
         name = "maddison.family"
         args = ["domain", name, "nameservers"]
         result = self.invoke(args=args)
         assert result.exit_code == 0
+        old_value = result.output.splitlines()
+        new_value = ["ns1.example.com", "ns2.example.com"]
+        result = self.invoke(args=args + new_value)
+        assert result.exit_code == 0
+        assert result.output == "OK\n"
+        result = self.invoke(args=args + old_value)
+        assert result.exit_code == 0
+        assert result.output == "OK\n"
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert result.output.splitlines() == old_value
 
     def test_get_domain_contacts(self):
         """Test domain contacts retrieval."""
@@ -117,21 +128,49 @@ class TestCLI(object):
         assert result.exit_code == 0
         assert result.output in ["True\n", "False\n"]
 
-    def test_get_domain_locked(self):
-        """Test domain lock state retrieval."""
+    def test_get_set_domain_locked(self):
+        """Test getting/setting domain lock state."""
         name = "maddison.family"
         args = ["domain", name, "locked"]
         result = self.invoke(args=args)
         assert result.exit_code == 0
-        assert result.output in ["True\n", "False\n"]
+        assert result.output.rstrip() in ["True", "False"]
+        old_value = result.output.splitlines()
+        if result.output == "True\n":
+            new_value = ["no"]
+        else:
+            new_value = ["yes"]
+        result = self.invoke(args=args + new_value)
+        assert (result.exit_code == 0 and result.output == "OK\n") or \
+               (result.exit_code == 2 and "Domain can not be unlocked until" in result.output)  # noqa
+        result = self.invoke(args=args + old_value)
+        assert result.exit_code == 0
+        assert result.output == "OK\n"
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert result.output.splitlines() == old_value
 
-    def test_get_domain_autorenew(self):
-        """Test domain autorenew state retrieval."""
+    def test_get_set_domain_autorenew(self):
+        """Test getting/setting domain autorenew state."""
         name = "maddison.family"
         args = ["domain", name, "autorenew"]
         result = self.invoke(args=args)
         assert result.exit_code == 0
-        assert result.output in ["True\n", "False\n"]
+        assert result.output.rstrip() in ["True", "False"]
+        old_value = result.output.splitlines()
+        if result.output == "True\n":
+            new_value = ["no"]
+        else:
+            new_value = ["yes"]
+        result = self.invoke(args=args + new_value)
+        assert result.exit_code == 0
+        assert result.output == "OK\n"
+        result = self.invoke(args=args + old_value)
+        assert result.exit_code == 0
+        assert result.output == "OK\n"
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert result.output.splitlines() == old_value
 
     def test_get_domain_expiry(self):
         """Test domain expiry date retrieval."""
