@@ -26,7 +26,7 @@ from pynamedotcom import API
 logger = logging.getLogger(__name__)
 
 
-def _default_auth_path():
+def _default_auth_path():  # pragma: no cover
     """Try and find the default auth-file, if it exists."""
     if "XDG_CONFIG_HOME" in os.environ:
         base_path = os.environ.get("XDG_CONFIG_HOME")
@@ -101,7 +101,7 @@ def ping(ctx):
             # Execute method and print a success message
             api.ping()
             click.echo(click.style("OK", fg="green"))
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -116,7 +116,7 @@ def domains(ctx):
             # Execute method and print a success message
             for domain in api.domains:
                 click.echo(domain)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -148,7 +148,7 @@ def domain(ctx, name):
                 click.echo("  expiry: {}".format(domain.expiry))
                 click.echo("  created: {}".format(domain.created))
                 click.echo("  renewal price: ${}".format(domain.renewal_price))
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 # fail cleanly
                 ctx.fail(message="{}".format(e))
 
@@ -163,7 +163,7 @@ def name(ctx):
             # Execute method and print the domain details
             domain = api.domain(name=ctx.obj.name)
             click.echo("{}".format(domain.name))
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -186,7 +186,7 @@ def nameservers(ctx, nameservers):
             else:
                 for nameserver in domain.nameservers:
                     click.echo("{}".format(nameserver))
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -202,7 +202,7 @@ def contacts(ctx):
             domain = api.domain(name=ctx.obj.name)
             for role, contact in domain.contacts.items():
                 click.echo("{}: {}".format(role, contact))
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -217,7 +217,7 @@ def privacy(ctx):
             # Execute method and print the domain details
             domain = api.domain(name=ctx.obj.name)
             click.echo("{}".format(domain.privacy))
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -237,7 +237,7 @@ def locked(ctx, state):
                 click.echo(click.style("OK", fg="green"))
             else:
                 click.echo("{}".format(domain.locked))
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -257,7 +257,7 @@ def autorenew(ctx, state):
                 click.echo(click.style("OK", fg="green"))
             else:
                 click.echo("{}".format(domain.autorenew))
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -272,7 +272,7 @@ def expiry(ctx):
             # Execute method and print the domain details
             domain = api.domain(name=ctx.obj.name)
             click.echo("{}".format(domain.expiry))
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -287,7 +287,7 @@ def created(ctx):
             # Execute method and print the domain details
             domain = api.domain(name=ctx.obj.name)
             click.echo("{}".format(domain.created))
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -302,7 +302,7 @@ def renewal_price(ctx):
             # Execute method and print the domain details
             domain = api.domain(name=ctx.obj.name)
             click.echo("${}".format(domain.renewal_price))
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
 
@@ -328,6 +328,6 @@ def search(ctx, name):
                 click.echo(click.style("{} is not available".format(result.name),  # noqa
                                        fg="red"))
                 ctx.exit(code=1)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             # fail cleanly
             ctx.fail(message="{}".format(e))
