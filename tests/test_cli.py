@@ -16,9 +16,11 @@ from __future__ import print_function
 
 import json
 import os
+import re
 
 from click.testing import CliRunner
 
+from pynamedotcom.contact import ROLES
 from pynamedotcom.cli import main
 
 
@@ -82,6 +84,78 @@ class TestCLI(object):
         for keyword in ["nameservers", "contacts", "privacy", "locked",
                         "autorenew", "expiry", "created", "renewal price"]:
             assert keyword in result.output
+
+    def test_get_domain_name(self):
+        """Test domain name retrieval."""
+        name = "maddison.family"
+        args = ["domain", name, "name"]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert name in result.output
+
+    def test_get_domain_nameservers(self):
+        """Test domain nameservers retrieval."""
+        name = "maddison.family"
+        args = ["domain", name, "nameservers"]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+
+    def test_get_domain_contacts(self):
+        """Test domain contacts retrieval."""
+        name = "maddison.family"
+        args = ["domain", name, "contacts"]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        for role in ROLES:
+            assert role in result.output
+
+    def test_get_domain_privacy(self):
+        """Test domain privacy state retrieval."""
+        name = "maddison.family"
+        args = ["domain", name, "privacy"]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert result.output in ["True\n", "False\n"]
+
+    def test_get_domain_locked(self):
+        """Test domain lock state retrieval."""
+        name = "maddison.family"
+        args = ["domain", name, "locked"]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert result.output in ["True\n", "False\n"]
+
+    def test_get_domain_autorenew(self):
+        """Test domain autorenew state retrieval."""
+        name = "maddison.family"
+        args = ["domain", name, "autorenew"]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert result.output in ["True\n", "False\n"]
+
+    def test_get_domain_expiry(self):
+        """Test domain expiry date retrieval."""
+        name = "maddison.family"
+        args = ["domain", name, "expiry"]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert re.match(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z', result.output)
+
+    def test_get_domain_created(self):
+        """Test domain creation date retrieval."""
+        name = "maddison.family"
+        args = ["domain", name, "created"]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert re.match(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z', result.output)
+
+    def test_get_domain_renewal_price(self):
+        """Test domain renewal price retrieval."""
+        name = "maddison.family"
+        args = ["domain", name, "renewal_price"]
+        result = self.invoke(args=args)
+        assert result.exit_code == 0
+        assert re.match(r'\$\d+.\d{2}', result.output)
 
     def test_search_available(self):
         """Test successful availablility search."""
