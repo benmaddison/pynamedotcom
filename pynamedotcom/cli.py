@@ -103,7 +103,7 @@ def ping(ctx):
             click.echo(click.style("OK", fg="green"))
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @main.command()
@@ -118,7 +118,7 @@ def domains(ctx):
                 click.echo(domain)
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @main.group(invoke_without_command=True)
@@ -150,7 +150,7 @@ def domain(ctx, name):
                 click.echo("  renewal price: ${}".format(domain.renewal_price))
             except Exception as e:
                 # fail cleanly
-                ctx.fail(message=click.style("{}".format(e), fg="red"))
+                ctx.fail(message="{}".format(e))
 
 
 @domain.command()
@@ -165,7 +165,7 @@ def name(ctx):
             click.echo("{}".format(domain.name))
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @domain.command()
@@ -188,7 +188,7 @@ def nameservers(ctx, nameservers):
                     click.echo("{}".format(nameserver))
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @domain.command()
@@ -204,7 +204,7 @@ def contacts(ctx):
                 click.echo("{}: {}".format(role, contact))
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @domain.command()
@@ -219,7 +219,7 @@ def privacy(ctx):
             click.echo("{}".format(domain.privacy))
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @domain.command()
@@ -239,7 +239,7 @@ def locked(ctx, state):
                 click.echo("{}".format(domain.locked))
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @domain.command()
@@ -259,7 +259,7 @@ def autorenew(ctx, state):
                 click.echo("{}".format(domain.autorenew))
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @domain.command()
@@ -274,7 +274,7 @@ def expiry(ctx):
             click.echo("{}".format(domain.expiry))
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @domain.command()
@@ -289,7 +289,7 @@ def created(ctx):
             click.echo("{}".format(domain.created))
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @domain.command()
@@ -304,7 +304,7 @@ def renewal_price(ctx):
             click.echo("${}".format(domain.renewal_price))
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
 
 
 @main.command()
@@ -330,4 +330,4 @@ def search(ctx, name):
                 ctx.exit(code=1)
         except Exception as e:
             # fail cleanly
-            ctx.fail(message=click.style("{}".format(e), fg="red"))
+            ctx.fail(message="{}".format(e))
