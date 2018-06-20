@@ -18,6 +18,8 @@ import json
 import logging
 import os
 
+from argparse import Namespace
+
 from pynamedotcom import API
 
 
@@ -84,8 +86,9 @@ def main(ctx, host, auth_file, username, token):
         """Helper function to return configured pynamedotcom.API instance."""
         return API(host=host, **auth)
 
+    ctx.obj = Namespace()
     # Add helper to click Context.obj to pass to command functions
-    ctx.obj = api
+    ctx.obj.api = api
 
 
 @main.command()
@@ -93,7 +96,7 @@ def main(ctx, host, auth_file, username, token):
 def ping(ctx):
     """Check for successful authentication."""
     # Use provided helper to instantiate pynamedotcom.API object
-    with ctx.obj() as api:
+    with ctx.obj.api() as api:
         try:
             # Execute method and print a success message
             api.ping()
@@ -108,7 +111,7 @@ def ping(ctx):
 def domains(ctx):
     """Get list of domain names."""
     # Use provided helper to instantiate pynamedotcom.API object
-    with ctx.obj() as api:
+    with ctx.obj.api() as api:
         try:
             # Execute method and print a success message
             for domain in api.domains:
@@ -123,24 +126,182 @@ def domains(ctx):
 @click.argument("name")
 def domain(ctx, name):
     """Get domain details."""
+    # Record args in Context
+    ctx.obj.name = name
+    # Only execute if no subcommand is provided
+    if ctx.invoked_subcommand is None:
+        # Use provided helper to instantiate pynamedotcom.API object
+        with ctx.obj.api() as api:
+            try:
+                # Execute method and print the domain details
+                domain = api.domain(name=name)
+                click.echo("{}".format(domain.name))
+                click.echo("  nameservers:")
+                for ns in domain.nameservers:
+                    click.echo("    {}".format(ns))
+                click.echo("  contacts:")
+                for role, contact in domain.contacts.items():
+                    click.echo("    {}: {}".format(role, contact))
+                click.echo("  privacy: {}".format(domain.privacy))
+                click.echo("  locked: {}".format(domain.locked))
+                click.echo("  autorenew: {}".format(domain.autorenew))
+                click.echo("  expiry: {}".format(domain.expiry))
+                click.echo("  created: {}".format(domain.created))
+                click.echo("  renewal price: ${}".format(domain.renewal_price))
+            except Exception as e:
+                # fail cleanly
+                ctx.fail(message=click.style("{}".format(e), fg="red"))
+
+
+@domain.command()
+@click.pass_context
+def name(ctx):
+    """Get domain name."""
     # Use provided helper to instantiate pynamedotcom.API object
-    with ctx.obj() as api:
+    with ctx.obj.api() as api:
         try:
             # Execute method and print the domain details
-            domain = api.domain(name=name)
+            domain = api.domain(name=ctx.obj.name)
             click.echo("{}".format(domain.name))
-            click.echo("  nameservers:")
-            for ns in domain.nameservers:
-                click.echo("    {}".format(ns))
-            click.echo("  contacts:")
+        except Exception as e:
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
+
+
+@domain.command()
+@click.pass_context
+@click.argument("nameservers", nargs=-1, required=False)
+def nameservers(ctx, nameservers):
+    """Get or set domain nameservers."""
+    # Coerce nameservers argument to list type
+    nameservers = list(nameservers)
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj.api() as api:
+        try:
+            # Execute method and print the domain details
+            domain = api.domain(name=ctx.obj.name)
+            if nameservers:
+                domain.nameservers = nameservers
+                click.echo(click.style("OK", fg="green"))
+            else:
+                for nameserver in domain.nameservers:
+                    click.echo("{}".format(nameserver))
+        except Exception as e:
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
+
+
+@domain.command()
+@click.pass_context
+def contacts(ctx):
+    """Get domain contacts."""
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj.api() as api:
+        try:
+            # Execute method and print the domain details
+            domain = api.domain(name=ctx.obj.name)
             for role, contact in domain.contacts.items():
-                click.echo("    {}: {}".format(role, contact))
-            click.echo("  privacy: {}".format(domain.privacy))
-            click.echo("  locked: {}".format(domain.locked))
-            click.echo("  autorenew: {}".format(domain.autorenew))
-            click.echo("  expiry: {}".format(domain.expiry))
-            click.echo("  created: {}".format(domain.created))
-            click.echo("  renewal price: ${}".format(domain.renewal_price))
+                click.echo("{}: {}".format(role, contact))
+        except Exception as e:
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
+
+
+@domain.command()
+@click.pass_context
+def privacy(ctx):
+    """Get domain privacy status."""
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj.api() as api:
+        try:
+            # Execute method and print the domain details
+            domain = api.domain(name=ctx.obj.name)
+            click.echo("{}".format(domain.privacy))
+        except Exception as e:
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
+
+
+@domain.command()
+@click.pass_context
+@click.argument("state", type=bool, required=False)
+def locked(ctx, state):
+    """Get or set domain lock status."""
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj.api() as api:
+        try:
+            # Execute method and print the domain details
+            domain = api.domain(name=ctx.obj.name)
+            if state is not None:
+                domain.locked = state
+                click.echo(click.style("OK", fg="green"))
+            else:
+                click.echo("{}".format(domain.locked))
+        except Exception as e:
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
+
+
+@domain.command()
+@click.pass_context
+@click.argument("state", type=bool, required=False)
+def autorenew(ctx, state):
+    """Get or set domain autorenew status."""
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj.api() as api:
+        try:
+            # Execute method and print the domain details
+            domain = api.domain(name=ctx.obj.name)
+            if state is not None:
+                domain.autorenew = state
+                click.echo(click.style("OK", fg="green"))
+            else:
+                click.echo("{}".format(domain.autorenew))
+        except Exception as e:
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
+
+
+@domain.command()
+@click.pass_context
+def expiry(ctx):
+    """Get domain expiry date/time."""
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj.api() as api:
+        try:
+            # Execute method and print the domain details
+            domain = api.domain(name=ctx.obj.name)
+            click.echo("{}".format(domain.expiry))
+        except Exception as e:
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
+
+
+@domain.command()
+@click.pass_context
+def created(ctx):
+    """Get domain creation date/time."""
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj.api() as api:
+        try:
+            # Execute method and print the domain details
+            domain = api.domain(name=ctx.obj.name)
+            click.echo("{}".format(domain.created))
+        except Exception as e:
+            # fail cleanly
+            ctx.fail(message=click.style("{}".format(e), fg="red"))
+
+
+@domain.command()
+@click.pass_context
+def renewal_price(ctx):
+    """Get domain renewal price."""
+    # Use provided helper to instantiate pynamedotcom.API object
+    with ctx.obj.api() as api:
+        try:
+            # Execute method and print the domain details
+            domain = api.domain(name=ctx.obj.name)
+            click.echo("${}".format(domain.renewal_price))
         except Exception as e:
             # fail cleanly
             ctx.fail(message=click.style("{}".format(e), fg="red"))
@@ -152,7 +313,7 @@ def domain(ctx, name):
 def search(ctx, name):
     """Search for domain availablility."""
     # Use provided helper to instantiate pynamedotcom.API object
-    with ctx.obj() as api:
+    with ctx.obj.api() as api:
         try:
             # Execute method and print the results
             result = api.check_availability(name=name)
