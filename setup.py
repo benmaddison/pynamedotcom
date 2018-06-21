@@ -29,22 +29,15 @@ with open(os.path.join(here, package["__name__"], "__meta__.py")) as f:
 with open(os.path.join(here, "packaging", "requirements.txt")) as f:
     package["__requirements__"] = f.readlines()
 
+description_regexp = re.compile(r'<!--description: (.+) -->')
 with open(os.path.join(here, "README.md")) as f:
+    package["__readme__"] = ""
     for line in f:
-        match = re.match(r'<!--description: () -->', line)
-        if match is not None:
+        match = description_regexp.match(line)
+        if match:
             package["__description__"] = match.group(1)
-            break
-    else:
-        package["__description__"] = None
-
-try:
-    import pypandoc
-    package["__readme__"] = pypandoc.convert_file('README.md',
-                                                  'rst', format='md')
-except (ImportError, RuntimeError) as e:
-    print("README conversion failed: {}".format(e))
-    package["__readme__"] = None
+        else:
+            package["__readme__"] += line
 
 
 setup(
@@ -54,6 +47,7 @@ setup(
     author_email=package["__author_email__"],
     description=package["__description__"],
     long_description=package["__readme__"],
+    long_description_content_type="text/markdown",
     license=package["__licence__"],
     classifiers=package["__classifiers__"],
     packages=find_packages(),

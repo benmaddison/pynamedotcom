@@ -29,3 +29,4 @@ deploy:
     secure: bHnI0xZkC/IENZuxUb2AucUTEFoOH3rco8h+0xQMXB3e9F5Ny4t9ADfv5V8I+E1E3v8IT6vdcO8vLxaMKUNS3Oz+FJXlfgjv+qBAzmE5EMhH/XF9AAK7rj1EEADXrvh3P9vksQOP3yQmrK4SvG9QUi8/xfpJkbB4kcGmdgYJmEozoBzc/YsQwoieroHKdZhqc3ww/Op+jd+54p/UHrN9iwAPPMbXbKmLzJo2wyd24LjCkQEgz9pkt9LuCCBvy997Ng2JZwJgHv91tiCwFXBoEmpNgUQEmSGRkLXVAoZDQre6YtWyTI1DFquN5nN2QhhAoDplNVXrGBHoddFe++flZeqkwFgf7dMfYP0JD0C04Pjd9ZTPtjyIMzVeOvgn4bi9bMeBebf77a9mEaI37OksXlAaaIyKj/5Ubrk1b/ChtI6Uk9V1YkrM6/Kr+iBmpZ3b0Qj30fP6j/6TK2LZ5Vu0LC94F1cCasiCuDqrJssszQqHy/HDtnBnoFgdo83kulk7XauCUhL6SP+jz/079HXdtExFuhqeqWP8RXPTg/XaiAKq+JIi1+9w0ujTG8t0ihJAVB+MF4Js4ocK/Ja5TErLw3MuBpAotQEdH5ydEzu5A6F/pfqZZcN+lryl0F3hw89Tzl9O0+YIQUrhwKAXy6BudxmdHMgZ0j3Undu5wEQikUQ=
   on:
     tags: true
+    python: '2.7'
