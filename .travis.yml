@@ -7,7 +7,8 @@ python:
 matrix:
   fast_finish: true
 before_install:
-- openssl aes-256-cbc -K $encrypted_7c230de6371e_key -iv $encrypted_7c230de6371e_iv -in tests/auth.json.enc -out tests/auth.json -d
+- openssl aes-256-cbc -K $encrypted_7c230de6371e_key -iv $encrypted_7c230de6371e_iv
+  -in tests/auth.json.enc -out tests/auth.json -d
 - sudo apt-get -qq update
 install:
 - pip install -U pip
@@ -25,6 +26,6 @@ deploy:
   user: benmaddison
   distributions: sdist bdist_wheel
   password:
-    secure: fPM9qk+yPe8jK9r3Pd34ovrZXFf4n757PNWp0EwdSbEZe+6tyqpl+9eT3drdRRBISEwjgendPQ8rvii3wUbujIHugkmhqdj1N4fp/+XA1OChDpqnDKymIQBDPvSWgAKhYYf/mVy0AAbxaCmjy+vNoWMk+Rm1euMludi5vZBpOZia+M1zPsGe49aq4lvVugnsdns6/IWjnmK+Vye5u3Lo00Xj8YIM+wrv9+gLj4NHp6A+bdX8tlmFYDDnlQewehdf07qBywZgHOLoonFMm1UBUfeM6/JvnlQUlsuqZzkrLdnolMAhMjPpwW07G21eBdfWEi88y6aEedG4ILcsD0rpciJYl5n7W/EwF1Gowr3i4MAoOd4ouIgxRA6j+mfsq/yfqkHMfDtBhYcyYTu0Z47bunUKOqQPRolkbcBx+9XHSkOadOBEOnVMcejRUHOlJKqadaxBUcI1bw3LForC0UddgdMD7dfSx+d6uMfZgZ1pLWDvbcBQ7PYZb00a6zV6NNDBn2UAxGptistuHisaSLnjFrA2cJ5+zc5/UlMhU1ZssDPTZjrzadFEtKMRuxBj7ARgVK+8Zcd0MptGYNN0vbRJWcAEWEgVvcvY4oHIkUQEQiswvlIBSIdv6GtHdKpN9LI+V+AlZCAk1psZyWt9ewzJbEGgsUViKWDbT80hbuz+CL4=
+    secure: bHnI0xZkC/IENZuxUb2AucUTEFoOH3rco8h+0xQMXB3e9F5Ny4t9ADfv5V8I+E1E3v8IT6vdcO8vLxaMKUNS3Oz+FJXlfgjv+qBAzmE5EMhH/XF9AAK7rj1EEADXrvh3P9vksQOP3yQmrK4SvG9QUi8/xfpJkbB4kcGmdgYJmEozoBzc/YsQwoieroHKdZhqc3ww/Op+jd+54p/UHrN9iwAPPMbXbKmLzJo2wyd24LjCkQEgz9pkt9LuCCBvy997Ng2JZwJgHv91tiCwFXBoEmpNgUQEmSGRkLXVAoZDQre6YtWyTI1DFquN5nN2QhhAoDplNVXrGBHoddFe++flZeqkwFgf7dMfYP0JD0C04Pjd9ZTPtjyIMzVeOvgn4bi9bMeBebf77a9mEaI37OksXlAaaIyKj/5Ubrk1b/ChtI6Uk9V1YkrM6/Kr+iBmpZ3b0Qj30fP6j/6TK2LZ5Vu0LC94F1cCasiCuDqrJssszQqHy/HDtnBnoFgdo83kulk7XauCUhL6SP+jz/079HXdtExFuhqeqWP8RXPTg/XaiAKq+JIi1+9w0ujTG8t0ihJAVB+MF4Js4ocK/Ja5TErLw3MuBpAotQEdH5ydEzu5A6F/pfqZZcN+lryl0F3hw89Tzl9O0+YIQUrhwKAXy6BudxmdHMgZ0j3Undu5wEQikUQ=
   on:
     tags: true
