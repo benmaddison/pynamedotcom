@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (c) 2018 Ben Maddison. All rights reserved.
 #
 # The contents of this file are licensed under the MIT License
@@ -32,3 +33,7 @@ __entry_points__ = {
         'namedotcom=pynamedotcom.cli:main',
     ]
 }
+
+
+if __name__ == "__main__":
+    print(__version__)
