@@ -9,15 +9,26 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-"""pynamedotcom Package."""
+"""pynamedotcom package metadata."""
 
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import logging
-
-import pynamedotcom.__meta__  # noqa
-from pynamedotcom.api import API
-
-logging.getLogger(__name__).addHandler(logging.NullHandler())
-__all__ = [API.__name__]
+__version__ = "0.1.0"
+__author__ = "Ben Maddison"
+__author_email__ = "benm@workonline.co.za"
+__licence__ = "MIT"
+__copyright__ = "Copyright (c) 2018 Ben Maddison"
+__url__ = "https://github.com/benmaddison/pynamedotcom"
+__classifiers__ = [
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: MIT License',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Internet',
+]
+__entry_points__ = {
+    'console_scripts': [
+        'namedotcom=pynamedotcom.cli:main',
+    ]
+}
